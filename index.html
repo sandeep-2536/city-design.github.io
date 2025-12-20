@@ -1,1477 +1,1046 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lahari Bankar | Algorithmic Engineer</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VanaSparsha | Intelligent City Grid</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link
-        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&family=Fira+Code:wght@400;600&display=swap"
-        rel="stylesheet">
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;900&family=Space+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+
     <style>
-        :root {
-            /* Palette: Deep Space Navy + Amber & Rose Accents */
-            --bg-deep: #020617;
-            --glass-bg: rgba(30, 41, 59, 0.4);
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --accent-primary: #f59e0b;
-            /* Amber */
-            --accent-secondary: #f43f5e;
-            /* Rose */
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --code-bg: #0f172a;
-            --success: #10b981;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: "Space Grotesk", sans-serif;
-            background-color: var(--bg-deep);
-            color: var(--text-main);
-            overflow-x: hidden;
-            min-height: 100vh;
-            position: relative;
-        }
-
-        /* --- BACKGROUND CANVAS --- */
-        #network-canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            background: linear-gradient(180deg, #020617 0%, #0f172a 100%);
-        }
-
-        /* --- SCROLLBAR --- */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: var(--bg-deep);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #334155;
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--accent-primary);
-        }
-
-        .container {
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 2rem;
-            position: relative;
-            z-index: 2;
-        }
-
-        .mono {
-            font-family: "Fira Code", monospace;
-        }
-
-        /* --- NAVIGATION --- */
-        .nav-bar {
-            padding: 1.5rem 0 3rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .brand {
-            font-size: 1.2rem;
-            font-weight: 700;
-            letter-spacing: -1px;
-            color: var(--text-main);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .brand::before {
-            content: '';
-            width: 10px;
-            height: 10px;
-            background: var(--accent-primary);
-            transform: rotate(45deg);
-        }
-
-        .path-display {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            background: rgba(255, 255, 255, 0.03);
-            padding: 6px 12px;
-            border-radius: 50px;
-            border: 1px solid var(--glass-border);
-        }
-
-        /* --- HERO SECTION --- */
-        .hero-section {
-            display: grid;
-            grid-template-columns: 1fr 300px;
-            gap: 3rem;
-            margin-bottom: 4rem;
-            align-items: center;
-            opacity: 0;
-            animation: fadeUp 1s ease forwards 0.2s;
-        }
-
-        .hero-content h1 {
-            font-size: 4rem;
-            line-height: 1;
-            margin-bottom: 1rem;
-            background: linear-gradient(135deg, #fff 30%, #94a3b8 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .role-label {
-            font-size: 0.9rem;
-            color: var(--accent-primary);
-            letter-spacing: 2px;
-            font-weight: 700;
-            text-transform: uppercase;
-            margin-bottom: 1rem;
-        }
-
-        .bio-text {
-            font-size: 1.1rem;
-            line-height: 1.6;
-            color: var(--text-muted);
-            border-left: 3px solid var(--accent-primary);
-            padding-left: 1.5rem;
-        }
-
-        .id-card {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(12px);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            padding: 2rem;
-            text-align: center;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
-            transition: transform 0.3s;
-        }
-
-        .id-card:hover {
-            transform: translateY(-5px);
-            border-color: rgba(245, 158, 11, 0.3);
-        }
-
-        .avatar-circle {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-            margin: 0 auto 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            font-weight: bold;
-            color: #fff;
-            position: relative;
-        }
-
-        .status-badge {
-            display: inline-block;
-            margin-top: 10px;
-            font-size: 0.75rem;
-            background: rgba(245, 158, 11, 0.1);
-            color: var(--accent-primary);
-            padding: 4px 10px;
-            border-radius: 4px;
-            border: 1px solid rgba(245, 158, 11, 0.2);
-        }
-
-        /* --- MODULES --- */
-        .section-header {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin: 3rem 0 2rem;
-        }
-
-        .header-line {
-            flex: 1;
-            height: 1px;
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .data-block {
-            background: rgba(15, 23, 42, 0.6);
-            border: 1px solid var(--glass-border);
-            border-left: 4px solid var(--accent-primary);
-            border-radius: 12px;
-            margin-bottom: 2rem;
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
-
-        .block-header {
-            padding: 1.5rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: linear-gradient(90deg, rgba(255, 255, 255, 0.02), transparent);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .block-title h3 {
-            font-size: 1.5rem;
-            color: #fff;
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-
-        .status-pill {
-            font-size: 0.7rem;
-            padding: 4px 10px;
-            border-radius: 20px;
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid var(--glass-border);
-            color: var(--text-muted);
-        }
-
-        /* --- ACCORDION --- */
-        .expandable-item {
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .expandable-item:last-child {
-            border-bottom: none;
-        }
-
-        .expandable-header {
-            padding: 1.2rem 2rem;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: background 0.2s;
-        }
-
-        .expandable-header:hover {
-            background: rgba(255, 255, 255, 0.02);
-        }
-
-        .problem-title {
-            font-size: 1rem;
-            color: #e2e8f0;
-            font-weight: 500;
-        }
-
-        .expand-icon {
-            transition: transform 0.3s;
-            color: var(--accent-primary);
-        }
-
-        .expandable-item.active .expand-icon {
-            transform: rotate(45deg);
-        }
-
-        .expandable-body {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.4s cubic-bezier(0, 1, 0, 1);
-        }
-
-        .inner-content {
-            padding: 1.5rem 2rem;
-            background: rgba(0, 0, 0, 0.2);
-        }
-
-        .problem-desc {
-            color: var(--text-muted);
-            margin-bottom: 1rem;
-            font-size: 0.95rem;
-            line-height: 1.6;
-        }
-
-        .solution-tag {
-            display: inline-block;
-            background: rgba(16, 185, 129, 0.1);
-            color: var(--success);
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-            border: 1px solid rgba(16, 185, 129, 0.2);
-        }
-
-        /* --- TERMINAL --- */
-        .terminal-block {
-            background: #0d1117;
-            border-radius: 6px;
-            border: 1px solid #30363d;
-            margin: 1rem 0;
-            font-family: "Fira Code", monospace;
-            font-size: 0.8rem;
-        }
-
-        .terminal-header-dots {
-            padding: 8px 12px;
-            background: #161b22;
-            display: flex;
-            gap: 6px;
-            border-bottom: 1px solid #30363d;
-        }
-
-        .dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-        }
-
-        .red {
-            background: #ff5f56;
-        }
-
-        .yellow {
-            background: #ffbd2e;
-        }
-
-        .green {
-            background: #27c93f;
-        }
-
-        .terminal-code {
-            padding: 1rem;
-            color: #c9d1d9;
-            overflow-x: auto;
-            white-space: pre;
-            line-height: 1.5;
-        }
-
-        .kw {
-            color: #ff7b72;
-        }
-
-        /* Keyword */
-        .fn {
-            color: #d2a8ff;
-        }
-
-        /* Function */
-        .cm {
-            color: #8b949e;
-            font-style: italic;
-        }
-
-        /* Comment */
-        .str {
-            color: #a5d6ff;
-        }
-
-        /* String */
-
-        /* --- SDG TAGS --- */
-        .sdg-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 1rem;
-        }
-
-        .sdg-tag {
-            font-size: 0.7rem;
-            color: #fff;
-            background: linear-gradient(90deg, var(--accent-secondary), #c026d3);
-            padding: 4px 10px;
-            border-radius: 4px;
-        }
-
-        /* --- IMAGE GALLERY --- */
-        .img-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-top: 4rem;
-        }
-
-        .img-card {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            border-radius: 12px;
-            padding: 1rem;
-            transition: 0.3s;
-        }
-
-        .img-card:hover {
-            transform: translateY(-5px);
-            border-color: var(--accent-primary);
-        }
-
-        .img-card h3 {
-            font-size: 1.1rem;
-            color: #fff;
-            margin-bottom: 1rem;
-        }
-
-        .img-card img {
-            width: 100%;
-            height: 220px;
-            object-fit: cover;
-            border-radius: 8px;
-            opacity: 0.8;
-            transition: 0.3s;
-        }
-
-        .img-card:hover img {
-            opacity: 1;
-        }
-
-
-        .systems-summary {
-    margin-top: 4rem;
-    padding: 2.5rem;
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 14px;
-    background: linear-gradient(
-        135deg,
-        rgba(255,255,255,0.02),
-        rgba(255,255,255,0.005)
-    );
-}
-
-.summary-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2rem;
-}
-
-.summary-header h3 {
-    font-size: 1.2rem;
-    letter-spacing: 1px;
-}
-
-.summary-tag {
-    font-size: 0.7rem;
-    padding: 0.3rem 0.7rem;
-    border: 1px solid rgba(255,255,255,0.15);
-    border-radius: 999px;
-    color: #9ae6b4;
-}
-
-.summary-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 1.5rem;
-}
-
-.summary-card {
-    padding: 1.4rem;
-    border-radius: 12px;
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.06);
-}
-
-.summary-card.wide {
-    grid-column: 1 / -1;
-}
-
-.summary-card h4 {
-    margin-bottom: 0.6rem;
-    font-size: 0.9rem;
-    color: #7dd3fc;
-}
-
-.summary-card p {
-    font-size: 0.85rem;
-    line-height: 1.6;
-    color: #cbd5e1;
-}
-
-.sdg-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.6rem;
-    margin-top: 0.5rem;
-}
-
-.sdg-row span {
-    padding: 0.3rem 0.6rem;
-    font-size: 0.7rem;
-    border-radius: 6px;
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.12);
-}
-
-.impact-dashboard-modern {
-    margin-top: 4rem;
-    padding: 3rem;
-    border-radius: 16px;
-    background: linear-gradient(145deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01));
-    border: 1px solid rgba(255,255,255,0.08);
-}
-
-.impact-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2.5rem;
-}
-
-.impact-header h3 {
-    font-size: 1.3rem;
-    letter-spacing: 1px;
-}
-
-.impact-sub {
-    font-size: 0.8rem;
-    color: #94a3b8;
-}
-
-.impact-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 2rem;
-}
-
-.impact-card {
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.07);
-    border-radius: 14px;
-    padding: 1.6rem;
-    text-align: center;
-}
-
-.impact-card h4 {
-    margin-bottom: 1rem;
-    font-size: 0.9rem;
-    color: #7dd3fc;
-}
-
-.progress-ring {
-    width: 90px;
-    height: 90px;
-    border-radius: 50%;
-    margin: 0 auto 0.8rem;
-    display: grid;
-    place-items: center;
-    font-weight: bold;
-    font-size: 1rem;
-    background:
-        conic-gradient(
-            #22c55e calc(var(--val) * 1%),
-            rgba(255,255,255,0.1) 0
+      /* --- 0. VARIABLES & RESET --- */
+      :root {
+        --bg-dark: #020617;
+        --accent: #00f2ff; /* Cyan */
+        --accent-sec: #8b5cf6; /* Violet */
+        --glass-bg: rgba(20, 25, 40, 0.6);
+        --glass-border: rgba(255, 255, 255, 0.1);
+        --text-main: #f8fafc;
+        --text-muted: #94a3b8;
+        --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      
+      /* HIDE DEFAULT CURSOR */
+      body, a, button, .card, .tab-btn { cursor: none; }
+
+      ::-webkit-scrollbar { width: 8px; }
+      ::-webkit-scrollbar-track { background: #0f172a; }
+      ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+      ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+      body {
+        font-family: "Outfit", sans-serif;
+        background-color: var(--bg-dark);
+        color: var(--text-main);
+        overflow-x: hidden;
+        /* Static Grid Background */
+        background-image: radial-gradient(
+            circle at 50% 0%,
+            #1e293b 0%,
+            transparent 50%
+          ),
+          linear-gradient(rgba(0, 242, 255, 0.02) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(0, 242, 255, 0.02) 1px, transparent 1px);
+        background-size: 100% 100%, 40px 40px, 40px 40px;
+        padding-bottom: 60px; /* Space for ticker */
+      }
+
+      /* NOISE OVERLAY */
+      body::after {
+        content: "";
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+        pointer-events: none;
+        z-index: 9998;
+        opacity: 0.4;
+      }
+
+      /* --- 1. CUSTOM CURSOR --- */
+      #cursor {
+        position: fixed;
+        top: 0; left: 0;
+        width: 40px; height: 40px;
+        border: 1px solid var(--accent);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+        z-index: 9999;
+        transition: width 0.3s, height 0.3s, background 0.3s;
+        mix-blend-mode: difference;
+      }
+      #cursor-dot {
+        position: fixed;
+        top: 0; left: 0;
+        width: 8px; height: 8px;
+        background: var(--accent);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+        z-index: 10000;
+      }
+      /* Cursor Hover State */
+      body.hovering #cursor {
+        width: 60px; height: 60px;
+        background: rgba(0, 242, 255, 0.1);
+        border-color: transparent;
+      }
+
+      /* --- 2. UTILITIES & SCROLL REVEAL --- */
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 2rem;
+      }
+      .mono { font-family: "Space Mono", monospace; }
+      .gradient-text {
+        background: linear-gradient(135deg, #fff 0%, var(--accent) 100%);
+        --webkit-background-clip: text;
+        --webkit-text-fill-color: transparent;
+      }
+      .card-link { text-decoration: none; color: inherit; display: block; }
+
+      /* SCROLL REVEAL CLASS */
+      .reveal {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
+      }
+      .reveal.active {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      /* --- 3. BOOT SCREEN --- */
+      #boot-screen {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: #000;
+        z-index: 10001; /* Above cursor */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-family: "Space Mono", monospace;
+        transition: opacity 0.5s ease-out;
+      }
+      .boot-text { color: var(--accent); font-size: 1.2rem; }
+      .line {
+        opacity: 0;
+        animation: typeOn 0.1s forwards;
+        margin-bottom: 10px;
+        border-right: 2px solid transparent;
+      }
+      .blink { animation: typeOn 0.1s forwards, blinkCursor 0.8s infinite; }
+
+      @keyframes typeOn { to { opacity: 1; } }
+      @keyframes blinkCursor {
+        0%, 100% { border-right-color: transparent; }
+        50% { border-right-color: var(--accent); }
+      }
+
+      /* --- 4. HERO SECTION --- */
+      .hero {
+        padding: 8rem 0 4rem;
+        text-align: center;
+        position: relative;
+      }
+      .hero h1 {
+        font-size: clamp(3rem, 8vw, 5rem);
+        line-height: 1.1;
+        margin-bottom: 1.5rem;
+        letter-spacing: -2px;
+      }
+      .glitch-effect { position: relative; display: inline-block; }
+      .glitch-effect::before, .glitch-effect::after {
+        content: attr(data-text);
+        position: absolute; top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: var(--bg-dark); opacity: 0.8;
+      }
+      .glitch-effect:hover::before {
+        left: 2px; text-shadow: -1px 0 #ff00c1;
+        animation: glitch-anim 5s infinite linear alternate-reverse;
+      }
+      .glitch-effect:hover::after {
+        left: -2px; text-shadow: -1px 0 #00fff9;
+        animation: glitch-anim 5s infinite linear alternate-reverse;
+      }
+      @keyframes glitch-anim {
+        0% { clip: rect(13px, 9999px, 81px, 0); }
+        5% { clip: rect(83px, 9999px, 4px, 0); }
+        10% { clip: rect(45px, 9999px, 12px, 0); }
+        100% { clip: rect(62px, 9999px, 33px, 0); }
+      }
+
+      .badge {
+        display: inline-flex; align-items: center; gap: 8px;
+        padding: 8px 16px;
+        background: rgba(0, 242, 255, 0.1);
+        border: 1px solid rgba(0, 242, 255, 0.2);
+        border-radius: 100px;
+        color: var(--accent);
+        font-size: 0.9rem;
+        margin-bottom: 2rem;
+        backdrop-filter: blur(5px);
+      }
+      .badge::before {
+        content: ""; width: 8px; height: 8px;
+        background: var(--accent);
+        border-radius: 50%;
+        box-shadow: 0 0 10px var(--accent);
+        animation: pulse 2s infinite;
+      }
+
+      /* --- 5. TEAM GRID --- */
+      .grid-section { padding: 4rem 0; }
+      .team-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 40px;
+        perspective: 1000px;
+      }
+      .card {
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        border-radius: 24px;
+        padding: 2.5rem;
+        position: relative;
+        transition: transform 0.1s var(--ease-out), border 0.3s;
+        transform-style: preserve-3d;
+        box-shadow: 0 0 0 transparent;
+      }
+      .card:hover {
+        border-color: var(--accent);
+        box-shadow: 0 0 30px rgba(0, 242, 255, 0.15);
+      }
+      .avatar {
+        width: 80px; height: 80px;
+        border-radius: 20px;
+        background: linear-gradient(135deg, var(--accent), var(--accent-sec));
+        display: flex; align-items: center; justify-content: center;
+        font-size: 2rem; font-weight: 700; color: #fff;
+        margin-bottom: 1.5rem;
+        transform: translateZ(20px);
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+      }
+      .card h3 { font-size: 1.5rem; transform: translateZ(15px); }
+      .card .role {
+        color: var(--accent); font-size: 0.9rem; margin-top: 5px;
+        transform: translateZ(10px);
+      }
+      .proj-count {
+        position: absolute; top: 20px; right: 20px;
+        font-size: 0.8rem; color: var(--text-muted);
+        background: rgba(255, 255, 255, 0.05);
+        padding: 5px 10px; border-radius: 8px;
+        transform: translateZ(5px);
+      }
+
+      /* --- 6. COURSE TERMINAL --- */
+      .course-section {
+        margin-top: 5rem; padding: 4rem 0;
+        border-top: 1px solid var(--glass-border);
+      }
+      .terminal-window {
+        background: #030816;
+        border: 1px solid var(--glass-border);
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+      }
+      .terminal-header {
+        background: rgba(255, 255, 255, 0.03);
+        padding: 15px 25px;
+        border-bottom: 1px solid var(--glass-border);
+        display: flex; gap: 8px;
+      }
+      .dot { width: 12px; height: 12px; border-radius: 50%; }
+      .dot.r { background: #ef4444; }
+      .dot.y { background: #eab308; }
+      .dot.g { background: #22c55e; }
+      
+      .terminal-body {
+        display: grid; grid-template-columns: 1.5fr 1fr;
+        padding: 3rem; gap: 4rem;
+      }
+      .course-info h2 { font-size: 2.5rem; margin-bottom: 1rem; }
+      
+      /* Typewriter Text Container */
+      #typewriter-text { min-height: 80px; }
+
+      .stat-grid {
+        display: grid; grid-template-columns: 1fr 1fr;
+        gap: 20px; margin-top: 2rem;
+      }
+      .stat-item {
+        background: rgba(255, 255, 255, 0.02);
+        padding: 1rem;
+        border-radius: 10px;
+        border-left: 2px solid var(--accent-sec);
+      }
+      .stat-item h4 { color: var(--text-muted); font-size: 0.8rem; margin-bottom: 5px; }
+      
+      .syllabus-list { display: flex; flex-direction: column; gap: 15px; }
+      .skill-bar-container { margin-bottom: 10px; }
+      .skill-info {
+        display: flex; justify-content: space-between;
+        font-size: 0.9rem; margin-bottom: 5px;
+      }
+      .bar-bg {
+        width: 100%; height: 6px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 3px; overflow: hidden;
+      }
+      .bar-fill {
+        height: 100%; background: var(--accent);
+        width: 0; transition: width 1.5s ease-out;
+      }
+
+      /* --- 7. NEW CITY DETAILS SECTION --- */
+      .city-details-section {
+        padding: 6rem 0;
+        background: linear-gradient(180deg, rgba(2,6,23,0) 0%, rgba(0, 242, 255, 0.03) 100%);
+        border-top: 1px solid var(--glass-border);
+      }
+
+      .split-layout {
+        display: grid;
+        grid-template-columns: 1fr 1.5fr;
+        gap: 60px;
+        align-items: start;
+      }
+
+      /* Gallery */
+      .map-gallery {
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+        position: sticky;
+        top: 40px;
+      }
+
+      .gallery-frame {
+        position: relative;
+        border-radius: 16px;
+        overflow: hidden;
+        border: 1px solid var(--glass-border);
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        aspect-ratio: 16/9;
+        group: hover;
+      }
+      
+      /* Placeholder for Maps */
+      .gallery-img {
+        width: 100%; height: 100%;
+        object-fit: cover;
+        opacity: 0.8;
+        transition: transform 0.5s ease, opacity 0.5s ease;
+      }
+      .gallery-frame:hover .gallery-img {
+        transform: scale(1.05);
+        opacity: 1;
+      }
+      
+      .frame-overlay {
+        position: absolute;
+        bottom: 0; left: 0; width: 100%;
+        padding: 15px;
+        background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+        font-family: "Space Mono";
+        font-size: 0.8rem;
+        color: var(--accent);
+        border-top: 1px solid rgba(0, 242, 255, 0.3);
+      }
+
+      /* Dashboard */
+      .city-dashboard {
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        padding: 2rem;
+        min-height: 600px;
+      }
+
+      /* Tabs */
+      .dashboard-tabs {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 2rem;
+        border-bottom: 1px solid var(--glass-border);
+        padding-bottom: 1rem;
+        overflow-x: auto;
+      }
+      
+      .tab-btn {
+        background: transparent;
+        border: 1px solid transparent;
+        color: var(--text-muted);
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-family: "Space Mono";
+        font-size: 0.9rem;
+        transition: all 0.3s;
+      }
+      
+      .tab-btn:hover { color: var(--text-main); background: rgba(255,255,255,0.05); }
+      
+      .tab-btn.active {
+        background: rgba(0, 242, 255, 0.1);
+        border-color: rgba(0, 242, 255, 0.3);
+        color: var(--accent);
+      }
+
+      /* Content Areas */
+      .tab-content { display: none; animation: fadeIn 0.5s ease; }
+      .tab-content.active { display: block; }
+
+      @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+      /* Visuals for Stats */
+      .overview-stats {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+        margin-bottom: 30px;
+      }
+      .big-stat h3 { font-size: 2.5rem; color: #fff; margin-bottom: 5px; }
+      .big-stat p { font-size: 0.9rem; color: var(--text-muted); }
+
+      /* Pie Chart Container */
+      .land-use-container {
+        display: flex;
+        align-items: center;
+        gap: 40px;
+        background: rgba(0,0,0,0.2);
+        padding: 20px;
+        border-radius: 16px;
+      }
+      
+      .pie-chart {
+        width: 180px; height: 180px;
+        border-radius: 50%;
+        /* Data from user: Agri 30%, Forest 16%, Ind 18%, Renew 10%, Res 16%, Other 10% */
+        background: conic-gradient(
+            #22c55e 0% 30%,      /* Agriculture */
+            #15803d 30% 46%,     /* Forest */
+            #ef4444 46% 64%,     /* Industries */
+            #00f2ff 64% 74%,     /* Renewable */
+            #eab308 74% 90%,     /* Residential */
+            #64748b 90% 100%     /* Others */
         );
-}
+        position: relative;
+        box-shadow: 0 0 20px rgba(0,0,0,0.5);
+      }
+      
+      .pie-chart::after {
+        content: "1500 sq km";
+        position: absolute;
+        top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+        width: 120px; height: 120px;
+        background: #0d121f;
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        font-family: "Space Mono"; font-size: 0.8rem; color: #fff;
+      }
 
-.progress-ring.down {
-    background:
-        conic-gradient(
-            #facc15 calc(var(--val) * 1%),
-            rgba(255,255,255,0.1) 0
-        );
-}
+      .legend-grid {
+        display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.85rem;
+      }
+      .legend-item { display: flex; align-items: center; gap: 8px; }
+      .l-dot { width: 8px; height: 8px; border-radius: 50%; }
 
-.impact-footer {
-    margin-top: 3rem;
-    text-align: center;
-    font-size: 0.85rem;
-    color: #cbd5e1;
-    line-height: 1.8;
-}
+      /* Demographic Bars */
+      .demo-row { margin-bottom: 15px; }
+      .demo-label { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 0.9rem;}
+      .demo-bar { height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; }
+      .demo-fill { height: 100%; }
 
+      /* Law List */
+      .law-list li {
+        margin-bottom: 12px;
+        list-style: none;
+        padding-left: 20px;
+        position: relative;
+        color: #cbd5e1;
+        font-size: 0.95rem;
+      }
+      .law-list li::before {
+        content: ">";
+        position: absolute; left: 0; color: var(--accent); font-family: "Space Mono";
+      }
 
-.summary-footer {
-    margin-top: 2rem;
-    text-align: center;
-    font-size: 0.85rem;
-    color: #94a3b8;
-}
+      /* Budget Cards */
+      .budget-card {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.05);
+        padding: 15px;
+        border-radius: 10px;
+        margin-bottom: 10px;
+        display: flex; justify-content: space-between; align-items: center;
+      }
+      .budget-cost { color: var(--accent); font-family: "Space Mono"; font-weight: 700; }
 
-.summary-footer .highlight {
-    color: #facc15;
-}
+      /* --- 8. FOOTER TICKER --- */
+      #neural-canvas {
+        position: fixed; top: 0; left: 0;
+        width: 100%; height: 100%;
+        z-index: -1; opacity: 0.4; pointer-events: none;
+      }
+      .live-ticker {
+        position: fixed; bottom: 0; width: 100%;
+        background: rgba(2, 6, 23, 0.95);
+        border-top: 1px solid var(--accent);
+        padding: 10px 0; overflow: hidden;
+        white-space: nowrap;
+        font-family: "Space Mono", monospace;
+        font-size: 0.8rem; z-index: 50;
+      }
+      .ticker-content {
+        display: inline-block;
+        animation: scroll 30s linear infinite;
+        color: var(--text-muted);
+      }
+      .ticker-content .item { margin: 0 30px; }
+      .green { color: #22c55e; text-shadow: 0 0 10px #22c55e; }
+      .red { color: #ef4444; text-shadow: 0 0 10px #ef4444; }
 
-        @keyframes fadeUp {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+      @keyframes scroll {
+        0% { transform: translateX(100%); }
+        100% { transform: translateX(-100%); }
+      }
+      @keyframes pulse {
+        0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; }
+      }
 
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-        }
-
-        @media(max-width: 800px) {
-            .hero-section {
-                grid-template-columns: 1fr;
-                text-align: center;
-            }
-
-            .bio-text {
-                border-left: none;
-                border-top: 3px solid var(--accent-primary);
-                padding-top: 1rem;
-                padding-left: 0;
-            }
-        }
+      @media (max-width: 900px) {
+        .terminal-body { grid-template-columns: 1fr; gap: 2rem; }
+        .split-layout { grid-template-columns: 1fr; }
+        .map-gallery { position: relative; top: 0; flex-direction: row; overflow-x: auto; }
+        .gallery-frame { min-width: 300px; }
+        .land-use-container { flex-direction: column; }
+      }
     </style>
-</head>
+  </head>
+  <body>
+    
+    <div id="cursor"></div>
+    <div id="cursor-dot"></div>
 
-<body>
-
-    <canvas id="network-canvas"></canvas>
-
-    <div class="container">
-        <nav class="nav-bar">
-            <div class="brand">LB_PORTFOLIO</div>
-            <div class="path-display mono">root/users/lahari_the_boss/projects</div>
-        </nav>
-
-        <section class="hero-section">
-            <div class="hero-content">
-                <div class="role-label mono">PROJECT LEAD &bull; ALGORITHMIC ENG</div>
-                <h1>Lahari Bankar</h1>
-                <p class="bio-text">
-                    I am a 3rd-semester Computer Science and Engineering student at KLE Technological University, Hubli.
-                    I have a strong interest in solving real-world problems using algorithms, data structures, and
-                    software solutions. I enjoy applying theoretical knowledge to practical scenarios. My goal is to
-                    contribute to smart, sustainable, and technology-driven solutions that make everyday systems faster,
-                    safer, and more reliable.
-                </p>
-            </div>
-            <div class="id-card">
-                <div class="avatar-circle mono">LB</div>
-                <div class="mono" style="font-size: 0.9rem; color: #fff;">ID: 01FE24BCS274</div>
-                <div class="status-badge mono">ADMINISTRATOR</div>
-            </div>
-        </section>
-
-        <div class="section-header">
-            <h2 class="mono" style="color: var(--text-main); font-size: 1.4rem;">CORE_SYSTEMS</h2>
-            <div class="header-line"></div>
-        </div>
-
-        <div class="systems-wrapper">
-
-            <div class="data-block">
-                <div class="block-header">
-                    <div class="block-title">
-                        <span>💧</span>
-                        <h3>Tourism Optimization</h3>
-                    </div>
-                    <span class="status-pill mono">ACTIVE DEV</span>
-                </div>
-
-                <div class="expandable-item">
-                    <div class="expandable-header">
-                        <h4 class="problem-title mono">01. Navigation & Route Finding</h4>
-                        <div class="expand-icon">+</div>
-                    </div>
-                    <div class="expandable-body">
-                        <div class="inner-content">
-                            <p class="problem-desc">
-                                <strong style="color: #fff;">Issue:</strong> Finding the shortest path between the
-                                Stadium and Waterfalls is difficult without an optimized system, leading to delays for
-                                tourists.
-                            </p>
-                            <div class="solution-tag mono">SOL: Graph Algorithms (BFS & DFS)</div>
-                            <p class="problem-desc">
-                                <strong>BFS</strong> is used for calculating the shortest path from the city entrance to
-                                key spots.<br>
-                                <strong>DFS</strong> is used for exploring all connected areas like walking trails.
-                            </p>
-                            <div class="terminal-block">
-                                <div class="terminal-header-dots">
-                                    <div class="dot red"></div>
-                                    <div class="dot yellow"></div>
-                                    <div class="dot green"></div> <span
-                                        style="color:#666; font-size:0.7em;">bfs_route.cpp</span>
-                                </div>
-                                <div class="terminal-code"><span class="cm">// BFS for Shortest Path</span>
-                                    <span class="kw">void</span> <span class="fn">BFS</span>(Node start) {
-                                    Queue q;
-                                    start.visited = <span class="kw">true</span>;
-                                    q.<span class="fn">add</span>(start);
-                                    //DFS function code -->
-                                    <span class="kw">while</span> (!q.isEmpty()) {
-                                    Node current = q.<span class="fn">removeFront</span>();
-                                    <span class="fn">visit</span>(current);
-                                    <span class="cm">// Visit neighbors logic...</span>
-                                    }
-                                    }
-                                </div>
-                            </div>
-                            <div class="sdg-container mono">
-                                <div class="sdg-tag">SDG 9: Innovation</div>
-                                <div class="sdg-tag">SDG 11: Sustainable Cities</div>
-                                <div class="sdg-tag">SDG 8: Decent Work</div>
-                                <div class="sdg-tag">SDG 13: Climate Action</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="expandable-item">
-                    <div class="expandable-header">
-                        <h4 class="problem-title mono">02. Data Management (Hotels)</h4>
-                        <div class="expand-icon">+</div>
-                    </div>
-                    <div class="expandable-body">
-                        <div class="inner-content">
-                            <p class="problem-desc">
-                                <strong style="color: #fff;">Issue:</strong> Tourists struggle to find cheapest hotels
-                                or top-rated lodges due to unorganized data.
-                            </p>
-                            <div class="solution-tag mono">SOL: Quick Sort (O(n log n))</div>
-                            <div class="terminal-block">
-                                <div class="terminal-header-dots">
-                                    <div class="dot red"></div>
-                                    <div class="dot yellow"></div>
-                                    <div class="dot green"></div> <span
-                                        style="color:#666; font-size:0.7em;">sort_hotels.cpp</span>
-                                </div>
-                                <div class="terminal-code"><span class="kw">function</span> <span
-                                        class="fn">QuickSortHotels</span>(Hotels[], low, high) {
-                                    <span class="kw">if</span> (low < high) { <span class="kw">int</span> pIndex = <span
-                                            class="fn">Partition</span>(Hotels, low, high);
-                                        <span class="fn">QuickSortHotels</span>(Hotels, low, pIndex - 1);
-                                        <span class="fn">QuickSortHotels</span>(Hotels, pIndex + 1, high);
-                                        }
-                                        }
-                                </div>
-                            </div>
-                            <div class="sdg-container mono">
-                                <div class="sdg-tag">SDG 17: Partnerships</div>
-                                <div class="sdg-tag">SDG 11: Sustainable Cities</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="expandable-item">
-                    <div class="expandable-header">
-                        <h4 class="problem-title mono">03. Crowd Prediction</h4>
-                        <div class="expand-icon">+</div>
-                    </div>
-                    <div class="expandable-body">
-                        <div class="inner-content">
-                            <p class="problem-desc">
-                                <strong style="color: #fff;">Issue:</strong> Need to predict peak tourist days to manage
-                                security resources.
-                            </p>
-                            <div class="solution-tag mono">SOL: Heaps & String Matching</div>
-                            <p class="problem-desc">
-                                1. <strong>Max-Heap:</strong> Identify peak tourist days from historical data.<br>
-                                2. <strong>String Matching:</strong> Analyze search queries to predict trends.
-                            </p>
-                            <div class="terminal-block">
-                                <div class="terminal-header-dots">
-                                    <div class="dot red"></div>
-                                    <div class="dot yellow"></div>
-                                    <div class="dot green"></div> <span
-                                        style="color:#666; font-size:0.7em;">crowd_pred.cpp</span>
-                                </div>
-                                <div class="terminal-code"><span class="fn">function</span>
-                                    GetTopKPeakDays(TouristData[], k):
-                                    <span class="fn">BuildMaxHeap</span>(TouristData)
-                                    topK = []
-                                    <span class="kw">for</span> i = 1 to k:
-                                    topK.<span class="fn">append</span>(TouristData[0]) <span class="cm"># root has max
-                                        value</span>
-                                    TouristData[0] = TouristData[end]
-                                    <span class="fn">MaxHeapify</span>(TouristData, 0, heap_size)
-                                    <span class="kw">return</span> topK
-
-                                    <span class="fn">function</span> CompareTomorrow(TouristData[], tomorrowCount):
-                                    maxToday = TouristData[0]
-                                    <span class="kw">if</span> tomorrowCount > maxToday:
-                                    <span class="kw">return</span> "Tomorrow expected higher crowd"
-                                    <span class="kw">else</span>:
-                                    <span class="kw">return</span> "Tomorrow crowd less than peak"
-                                </div>
-                            </div>
-                            <div class="sdg-container mono">
-                                <div class="sdg-tag">SDG 8: Economy</div>
-                                <div class="sdg-tag">SDG 9: Innovation</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="data-block">
-                <div class="block-header">
-                    <div class="block-title">
-                        <span>⚡</span>
-                        <h3>Hydro-Power Station</h3>
-                    </div>
-                    <span class="status-pill mono">R&D PHASE</span>
-                </div>
-
-                <div class="expandable-item">
-                    <div class="expandable-header">
-                        <h4 class="problem-title mono">01. Hydropower Data Lag</h4>
-                        <div class="expand-icon">+</div>
-                    </div>
-                    <div class="expandable-body">
-                        <div class="inner-content">
-                            <p class="problem-desc">
-                                <strong style="color: #fff;">Issue:</strong> Real-time hydropower data becomes slow to
-                                access using normal structures. Inserting and searching large datasets in normal
-                                arrays/lists becomes too slow, making monitoring dashboards lag.
-                            </p>
-                            <div class="solution-tag mono">SOL: Red-Black Tree</div>
-                            <div class="terminal-block">
-                                <div class="terminal-header-dots">
-                                    <div class="dot red"></div>
-                                    <div class="dot yellow"></div>
-                                    <div class="dot green"></div> <span
-                                        style="color:#666; font-size:0.7em;">tree_bal.cpp</span>
-                                </div>
-                                <div class="terminal-code"><span class="fn">function</span> InsertNode(root, reading):
-                                    <span class="kw">if</span> root == NULL: <span class="kw">return</span>
-                                    NewNode(reading)
-
-                                    <span class="kw">if</span> reading.timestamp < root.reading.timestamp:
-                                        root.left=<span class="fn">InsertNode</span>(root.left, reading)
-                                        <span class="kw">else</span>:
-                                        root.right = <span class="fn">InsertNode</span>(root.right, reading)
-
-                                        <span class="cm"># Rebalance the tree (RB Properties)</span>
-                                        root = <span class="fn">BalanceTree</span>(root)
-                                        <span class="kw">return</span> root
-                                </div>
-                            </div>
-                            <div class="sdg-container mono">
-                                <div class="sdg-tag">SDG 7: Clean Energy</div>
-                                <div class="sdg-tag">SDG 13: Climate Action</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="expandable-item">
-                    <div class="expandable-header">
-                        <h4 class="problem-title mono">02. Optimizing Power Loss</h4>
-                        <div class="expand-icon">+</div>
-                    </div>
-                    <div class="expandable-body">
-                        <div class="inner-content">
-                            <p class="problem-desc">
-                                <strong style="color: #fff;">Issue:</strong> High Transmission Loss. Electricity travels
-                                through long, high-resistance lines. During peak load, grid struggles to choose the path
-                                with lowest loss.
-                            </p>
-                            <div class="solution-tag mono">SOL: Dijkstra's Algorithm</div>
-                            <div class="terminal-block">
-                                <div class="terminal-header-dots">
-                                    <div class="dot red"></div>
-                                    <div class="dot yellow"></div>
-                                    <div class="dot green"></div> <span
-                                        style="color:#666; font-size:0.7em;">flow_opt.cpp</span>
-                                </div>
-                                <div class="terminal-code"><span class="kw">while</span> MinHeap is not empty:
-                                    u = MinHeap.<span class="fn">extractMin</span>() <span class="cm"># Node with min
-                                        loss</span>
-                                    visited[u] = <span class="kw">true</span>
-
-                                    <span class="kw">for</span> each neighbor v of u:
-                                    <span class="kw">if</span> visited[v] == <span class="kw">false</span>:
-                                    alt = dist[u] + weight(u, v)
-                                    <span class="kw">if</span> alt < dist[v]: dist[v]=alt prev[v]=u MinHeap.<span
-                                        class="fn">insert</span>(v, dist[v])
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="expandable-item">
-                    <div class="expandable-header">
-                        <h4 class="problem-title mono">03. Identifying Faulty Sensors</h4>
-                        <div class="expand-icon">+</div>
-                    </div>
-                    <div class="expandable-body">
-                        <div class="inner-content">
-                            <p class="problem-desc">
-                                <strong style="color: #fff;">Issue:</strong> Manually searching for faulty sensor IDs in
-                                large logs is slow.
-                            </p>
-                            <div class="solution-tag mono">SOL: KMP (Knuth-Morris-Pratt)</div>
-                            <div class="terminal-block">
-                                <div class="terminal-header-dots">
-                                    <div class="dot red"></div>
-                                    <div class="dot yellow"></div>
-                                    <div class="dot green"></div> <span
-                                        style="color:#666; font-size:0.7em;">sensor_scan.cpp</span>
-                                </div>
-                                <div class="terminal-code"><span class="cm">// KMP Pattern Searching</span>
-                                    <span class="kw">void</span> <span class="fn">KMPSearch</span>(<span
-                                        class="kw">char</span>* pat, <span class="kw">char</span>* txt) {
-                                    <span class="kw">int</span> M = <span class="fn">strlen</span>(pat);
-                                    <span class="kw">int</span> N = <span class="fn">strlen</span>(txt);
-                                    <span class="fn">computeLPSArray</span>(pat, M, lps);
-
-                                    <span class="kw">int</span> i = 0, j = 0;
-                                    <span class="kw">while</span> ((N - i) >= (M - j)) {
-                                    <span class="kw">if</span> (pat[j] == txt[i]) { j++; i++; }
-                                    <span class="kw">if</span> (j == M) {
-                                    <span class="fn">printf</span>(<span class="str">"Fault detected at %d"</span>, i -
-                                    j);
-                                    j = lps[j - 1];
-                                    }
-                                    <span class="kw">else if</span> (i < N && pat[j] !=txt[i]) { <span class="kw">
-                                        if</span> (j != 0) j = lps[j - 1];
-                                        <span class="kw">else</span> i++;
-                                        }
-                                        }
-                                        }
-                                </div>
-                            </div>
-                            <div class="sdg-container mono">
-                                <div class="sdg-tag">SDG 9: Industry</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="data-block">
-                <div class="block-header">
-                    <div class="block-title">
-                        <span>🙏</span>
-                        <h3>Religious Crowd Control</h3>
-                    </div>
-                    <span class="status-pill mono">DEPLOYED</span>
-                </div>
-
-                <div class="expandable-item">
-                    <div class="expandable-header">
-                        <h4 class="problem-title mono">01. Live Zone Monitoring</h4>
-                        <div class="expand-icon">+</div>
-                    </div>
-                    <div class="expandable-body">
-                        <div class="inner-content">
-                            <p class="problem-desc">
-                                <strong style="color: #fff;">Issue:</strong> Hard to detect overcrowded zones instantly.
-                                Linear search is too slow for live updates.
-                            </p>
-                            <div class="solution-tag mono">SOL: Segment Tree</div>
-                            <div class="terminal-block">
-                                <div class="terminal-header-dots">
-                                    <div class="dot red"></div>
-                                    <div class="dot yellow"></div>
-                                    <div class="dot green"></div> <span
-                                        style="color:#666; font-size:0.7em;">zone_monitor.cpp</span>
-                                </div>
-                                <div class="terminal-code"><span class="fn">function</span> BuildSegmentTree(Crowd[],
-                                    start, end, tree[], node):
-                                    <span class="kw">if</span> start == end:
-                                    tree[node] = Crowd[start]
-                                    <span class="kw">return</span> tree[node]
-                                    mid = (start + end) / 2
-                                    tree[node] = <span class="fn">Build</span>(..., 2*node+1) + <span
-                                        class="fn">Build</span>(..., 2*node+2)
-                                    <span class="kw">return</span> tree[node]
-
-                                    <span class="fn">function</span> RangeQuery(tree[], start, end, l, r, node):
-                                    <span class="kw">if</span> l <= start and r>= end: <span class="kw">return</span>
-                                        tree[node] <span class="cm"># Overlap</span>
-                                        <span class="kw">if</span> r < start or l> end: <span class="kw">return</span> 0
-                                            <span class="cm"># No overlap</span>
-                                            mid = (start + end) / 2
-                                            <span class="kw">return</span> <span class="fn">RangeQuery</span>(...) +
-                                            <span class="fn">RangeQuery</span>(...)
-                                </div>
-                            </div>
-                            <div class="sdg-container mono">
-                                <div class="sdg-tag">SDG 16: Strong Institutions</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="data-block">
-    <div class="block-header">
-        <div class="block-title">
-            <span>🦌</span>
-            <h3>Wildlife Migration Safety</h3>
-        </div>
-        <span class="status-pill mono">DEPLOYED</span>
+    <div id="boot-screen">
+      <div class="boot-text">
+        <div class="line">INITIALIZING VANASPARSHA PROTOCOL...</div>
+        <div class="line" style="animation-delay: 0.5s">LOADING ASSETS... [OK]</div>
+        <div class="line" style="animation-delay: 1s">CONNECTING TO NEURAL GRID... [OK]</div>
+        <div class="line" style="animation-delay: 1.5s">DECRYPTING ALGORITHMS... [OK]</div>
+        <div class="line blink" style="animation-delay: 2s">SYSTEM READY.</div>
+      </div>
     </div>
 
-    <div class="expandable-item">
-        <div class="expandable-header">
-            <h4 class="problem-title mono">01. Safest Migration Route</h4>
-            <div class="expand-icon">+</div>
-        </div>
+    <canvas id="neural-canvas"></canvas>
 
-        <div class="expandable-body">
-            <div class="inner-content">
-                <p class="problem-desc">
-                    <strong style="color:#fff;">Issue:</strong>
-                    Identifying the path of lowest cumulative risk for migrating animals
-                    between forest zones, especially when some paths pass through unsafe
-                    areas (poaching zones, highways) with <strong>negative risk values</strong>.
+    <section class="hero reveal">
+      <div class="container">
+        <div class="badge">
+          <span class="mono">SYSTEM V.2.0</span>
+        </div>
+        <h1>
+          Project
+          <span class="gradient-text glitch-effect" data-text="VanaSparsha">VanaSparsha</span><br />
+          Smart City Infrastructure
+        </h1>
+        <p class="mono" style="color: var(--text-muted)">
+          Algorithmic Optimization & Urban Planning Portfolio
+        </p>
+      </div>
+    </section>
+
+    <section class="grid-section">
+      <div class="container">
+        <div class="team-grid">
+          
+          <a href="https://lahari2006475.github.io/City_Design_DAA/" class="card-link reveal">
+              <div class="card tilt-card">
+                <span class="proj-count mono">3 Projects</span>
+                <div class="avatar">LB</div>
+                <h3>Lahari Bankar</h3>
+                <div class="role mono">PROJECT LEAD & Compiler</div>
+              </div>
+          </a>
+
+          <a href="Pavitra.html" class="card-link reveal" style="transition-delay: 0.1s">
+              <div class="card tilt-card">
+                <span class="proj-count mono">2 Projects</span>
+                <div class="avatar">PA</div>
+                <h3>Pavitra Adur</h3>
+                <div class="role mono">ALGO ARCHITECT</div>
+              </div>
+          </a>
+
+          <a href="https://sharanu-patil33.github.io/DAA2025/" class="card-link reveal" style="transition-delay: 0.2s">
+              <div class="card tilt-card">
+                <span class="proj-count mono">3 Projects</span>
+                <div class="avatar">SP</div>
+                <h3>Sharanagouda P</h3>
+                <div class="role mono">INTERFACE DEV</div>
+              </div>
+          </a>
+
+          <a href="Sandeep.html" class="card-link reveal" style="transition-delay: 0.3s">
+              <div class="card tilt-card">
+                <span class="proj-count mono">2 Projects</span>
+                <div class="avatar">SG</div>
+                <h3>Sandeepgouda</h3>
+                <div class="role mono">SYSTEMS ENG</div>
+              </div>
+          </a>
+
+        </div>
+      </div>
+    </section>
+
+    <section class="course-section reveal" id="course-trigger">
+      <div class="container">
+        <div class="terminal-window" id="terminal">
+          <div class="terminal-header">
+            <div class="dot r"></div>
+            <div class="dot y"></div>
+            <div class="dot g"></div>
+            <span class="mono" style="margin-left: 10px; font-size: 0.8rem; color: #64748b">
+              user@vanasparsha:~/course-overview
+            </span>
+          </div>
+          <div class="terminal-body">
+            <div class="course-info">
+              <h2>
+                Design & Analysis of <br /><span class="gradient-text">Algorithms</span>
+              </h2>
+              <p id="typewriter-text" style="color: var(--text-muted); line-height: 1.7;">
                 </p>
 
-                <div class="solution-tag mono">
-                    SOL: Bellman-Ford Algorithm
+              <div class="stat-grid">
+                <div class="stat-item">
+                  <h4 class="mono">INSTRUCTOR</h4>
+                  <p>Prof. Prakash Hegde</p>
+                </div>
+                <div class="stat-item">
+                  <h4 class="mono">CREDITS</h4>
+                  <p>5.5 (Lab Integrated)</p>
+                </div>
+                <div class="stat-item">
+                  <h4 class="mono">DURATION</h4>
+                  <p>3.5 Months</p>
+                </div>
+                <div class="stat-item">
+                  <h4 class="mono">OUTCOME</h4>
+                  <p>AI can't take your Job</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="syllabus-list">
+              <p class="mono" style="color: var(--accent); margin-bottom: 10px">
+                // SYLLABUS_COVERAGE
+              </p>
+
+              <div class="skill-bar-container">
+                <div class="skill-info">
+                  <span>Graph Theory (MST, BFS, DFS)</span><span class="mono">95%</span>
+                </div>
+                <div class="bar-bg">
+                  <div class="bar-fill" style="width: 95%"></div>
+                </div>
+              </div>
+
+              <div class="skill-bar-container">
+                <div class="skill-info">
+                  <span>Dynamic Programming</span><span class="mono">80%</span>
+                </div>
+                <div class="bar-bg">
+                  <div class="bar-fill" style="width: 80%"></div>
+                </div>
+              </div>
+
+              <div class="skill-bar-container">
+                <div class="skill-info">
+                  <span>Greedy Algorithms</span><span class="mono">90%</span>
+                </div>
+                <div class="bar-bg">
+                  <div class="bar-fill" style="width: 90%"></div>
+                </div>
+              </div>
+
+              <div class="skill-bar-container">
+                <div class="skill-info">
+                  <span>Divide & Conquer</span><span class="mono">85%</span>
+                </div>
+                <div class="bar-bg">
+                  <div class="bar-fill" style="width: 85%"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="city-details-section reveal">
+        <div class="container">
+            <h2 class="mono" style="margin-bottom: 3rem; border-left: 4px solid var(--accent); padding-left: 20px;">
+                VANASPARSHA_CITY_GRID <span style="font-size: 0.6em; color: var(--accent-sec)">// CLASSIFIED</span>
+            </h2>
+
+            <div class="split-layout">
+                <div class="map-gallery">
+                    <div class="gallery-frame tilt-card">
+                        <img src="./VAN.jpg" alt="City Schematic" class="gallery-img">
+                        <div class="frame-overlay">
+                            CITY overview<br>
+                            <span class="mono" style="color: #fff">15.4° N Latitude and 75° E Longitude</span>
+                        </div>
+                    </div>
+                    <div class="gallery-frame tilt-card">
+                         <img src="./unsp.jpg" alt="Terrain Grid" class="gallery-img">
+                         <div class="frame-overlay">
+                            SECTOR B: INDUSTRIAL ZONE<br>
+                            <span class="mono" style="color: #fff">STATUS: DEVELOPING</span>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="terminal-block">
-                    <div class="terminal-header-dots">
-                        <div class="dot red"></div>
-                        <div class="dot yellow"></div>
-                        <div class="dot green"></div>
-                        <span style="color:#666;font-size:0.7em;">safest_route.cpp</span>
+                <div class="city-dashboard">
+                    <div class="dashboard-tabs">
+                        <button class="tab-btn active" onclick="openTab('overview')">LAND_USE</button>
+                        <button class="tab-btn" onclick="openTab('demography')">DEMOGRAPHY</button>
+                        <button class="tab-btn" onclick="openTab('sustain')">SUSTAINABILITY</button>
+                        <button class="tab-btn" onclick="openTab('laws')">GOVERNANCE</button>
                     </div>
 
-                    <div class="terminal-code">
-<span class="kw">for</span> each zone z in Zones:
-    safeDist[z] = INF
-    parent[z] = NIL
+                    <div id="overview" class="tab-content active">
+                        <div class="overview-stats">
+                            <div class="big-stat">
+                                <h3 class="mono">1,500 <span style="font-size: 1rem; color: var(--accent)">km²</span></h3>
+                                <p>Total City Area</p>
+                            </div>
+                            <div class="big-stat">
+                                <h3 class="mono">580XXX</h3>
+                                <p>Area Pin Code</p>
+                            </div>
+                        </div>
 
-safeDist[sourceZone] = 0
-
-<span class="cm">// Relax all paths (V - 1 times)</span>
-<span class="kw">for</span> i = 1 to Zones - 1:
-    <span class="kw">for</span> each path (u, v) in Paths:
-        <span class="kw">if</span> safeDist[u] + risk[u][v] &lt; safeDist[v]:
-            safeDist[v] = safeDist[u] + risk[u][v]
-            parent[v] = u
-
-<span class="cm">// Detect unsafe negative-risk cycles</span>
-<span class="kw">for</span> each path (u, v) in Paths:
-    <span class="kw">if</span> safeDist[u] + risk[u][v] &lt; safeDist[v]:
-        print("Unsafe migration cycle detected")
+                        <h4 class="mono" style="margin-bottom: 20px; color: var(--accent)">AREA DISTRIBUTION</h4>
+                        <div class="land-use-container">
+                            <div class="pie-chart"></div>
+                            <div class="legend-grid">
+                                <div class="legend-item"><div class="l-dot" style="background: #22c55e"></div> Agri (30%)</div>
+                                <div class="legend-item"><div class="l-dot" style="background: #ef4444"></div> Industry (18%)</div>
+                                <div class="legend-item"><div class="l-dot" style="background: #15803d"></div> Forest (16%)</div>
+                                <div class="legend-item"><div class="l-dot" style="background: #eab308"></div> Residential (16%)</div>
+                                <div class="legend-item"><div class="l-dot" style="background: #00f2ff"></div> Renewable (10%)</div>
+                                <div class="legend-item"><div class="l-dot" style="background: #64748b"></div> Transport (5%)</div>
+                            </div>
+                        </div>
                     </div>
-                </div>
 
-                <div class="sdg-container mono">
-                    <div class="sdg-tag">SDG 15: Life on Land</div>
-                    <div class="sdg-tag">SDG 13: Climate Action</div>
-                    <div class="sdg-tag">SDG 11: Sustainable Cities</div>
+                    <div id="demography" class="tab-content">
+                        <div class="overview-stats">
+                            <div class="big-stat">
+                                <h3 class="mono">8,00,000</h3>
+                                <p>Total Population</p>
+                            </div>
+                            <div class="big-stat">
+                                <h3 class="mono">250-270 <span style="font-size: 1rem">/sq.km</span></h3>
+                                <p>Density</p>
+                            </div>
+                        </div>
+
+                        <div class="demo-row">
+                            <div class="demo-label"><span>Men</span> <span class="mono">55% </span></div>
+                            <div class="demo-bar"><div class="demo-fill" style="width: 55%; background: #3b82f6"></div></div>
+                        </div>
+                        <div class="demo-row">
+                            <div class="demo-label"><span>Women</span> <span class="mono">43% </span></div>
+                            <div class="demo-bar"><div class="demo-fill" style="width: 43%; background: #ec4899"></div></div>
+                        </div>
+                        <div class="demo-row">
+                            <div class="demo-label"><span>Others</span> <span class="mono">2% (10K)</span></div>
+                            <div class="demo-bar"><div class="demo-fill" style="width: 2%; background: #a855f7"></div></div>
+                        </div>
+
+                        <h4 class="mono" style="margin-top: 30px; margin-bottom: 10px; color: var(--accent)">AGE BREAKDOWN HIGHLIGHTS</h4>
+                        <div class="stat-grid" style="margin-top: 10px;">
+                            <div class="stat-item"><h4 class="mono">YOUTH (21-30)</h4><p>25% of Pop.</p></div>
+                            <div class="stat-item"><h4 class="mono">SENIORS (60+)</h4><p>4% of Pop.</p></div>
+                        </div>
+                    </div>
+
+                    <div id="sustain" class="tab-content">
+                        <div class="budget-card">
+                            <div>
+                                <h4 style="margin-bottom: 5px;">Solar Farms (100 sq km)</h4>
+                                <p style="font-size: 0.8rem; color: #94a3b8">Renewable Energy Infrastructure</p>
+                            </div>
+                            <div class="budget-cost">₹3,800 Cr</div>
+                        </div>
+
+                        <div class="budget-card">
+                            <div>
+                                <h4 style="margin-bottom: 5px;">Water Management</h4>
+                                <p style="font-size: 0.8rem; color: #94a3b8">Treatment & Harvesting</p>
+                            </div>
+                            <div class="budget-cost">₹5,300 Cr</div>
+                        </div>
+                        
+                        <div class="stat-grid">
+                            <div class="stat-item">
+                                <h4 class="mono">STRATEGY</h4>
+                                <p style="font-size: 0.85rem">Phased development to avoid upfront cost overload and influenced by Singapore city design and Mumbai layout.</p>
+                            </div>
+                            <div class="stat-item">
+                                <h4 class="mono">INFLATION</h4>
+                                <p style="font-size: 0.85rem">5.59% (Current Rate)</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="laws" class="tab-content">
+                        <h4 class="mono" style="color: var(--accent); margin-bottom: 15px;">CIVIC REGULATIONS</h4>
+                        <ul class="law-list">
+                            <li>Vehicle Life Span: Min 6 years / Max 12 years.</li>
+                            <li>Separate lanes mandated for 2-wheelers vs 4-wheelers.</li>
+                            <li>Mandatory Compost Pits & Biogas connections in residential zones.</li>
+                            <li>Strict E-waste recycling protocols for industries.</li>
+                            <li>Free Education in rural areas.</li>
+                            <li>Equal pay enforcement for Men & Women.</li>
+                            <li>Severe penalties for theft, robbery, and deepfake creation.</li>
+                            <li>Incentives: Govt jobs for single-child families.</li>
+                            <li>Free Hospital treatment for Industry Workers and nearest Areas.</li>
+                           
+                        </ul>
+                    </div>
+
                 </div>
             </div>
         </div>
-    </div>
-</div>
+    </section>
 
-
-        <div class="data-block">
-    <div class="block-header">
-        <div class="block-title">
-            <span>🏛️</span>
-            <h3>Civic Issue Optimization</h3>
-        </div>
-        <span class="status-pill mono">ACTIVE DEV</span>
-    </div>
-
-    <!-- PROBLEM 01 -->
-    <div class="expandable-item">
-        <div class="expandable-header">
-            <h4 class="problem-title mono">01. Citizen Complaint Routing</h4>
-            <div class="expand-icon">+</div>
-        </div>
-        <div class="expandable-body">
-            <div class="inner-content">
-                <p class="problem-desc">
-                    <strong style="color:#fff;">Issue:</strong>
-                    Complaints like potholes, broken streetlights, and water leakage
-                    reach wrong departments, get delayed, or miss SLA deadlines.
-                </p>
-
-                <div class="solution-tag mono">
-                    SOL: unordered_map + priority_queue
-                </div>
-
-                <div class="terminal-block">
-                    <div class="terminal-header-dots">
-                        <div class="dot red"></div>
-                        <div class="dot yellow"></div>
-                        <div class="dot green"></div>
-                        <span style="color:#666;font-size:0.7em;">complaint_routing.cpp</span>
-                    </div>
-                    <div class="terminal-code">
-<span class="kw">struct</span> Complaint {
-    <span class="kw">int</span> priority;
-    <span class="kw">string</span> department, text;
-};
-
-<span class="kw">unordered_map</span>&lt;<span class="kw">string</span>, <span class="kw">string</span>&gt; deptMap = {
-    {"pothole","Roads"},
-    {"light","Electricity"},
-    {"water","Water Supply"}
-};
-
-<span class="kw">priority_queue</span>&lt;Complaint, vector&lt;Complaint&gt;, Compare&gt; pq;
-
-pq.<span class="fn">push</span>({1,"Roads","pothole near main road"});
-pq.<span class="fn">push</span>({1,"Electricity","street light not working"});
-
-<span class="kw">while</span>(!pq.<span class="fn">empty</span>()){
-    Complaint c = pq.<span class="fn">top</span>(); pq.<span class="fn">pop</span>();
-    cout &lt;&lt; "Routing to " &lt;&lt; c.department;
-}
-                    </div>
-                </div>
-
-                <div class="sdg-container mono">
-                    <div class="sdg-tag">SDG 11: Sustainable Cities</div>
-                    <div class="sdg-tag">SDG 16: Strong Institutions</div>
-                </div>
-            </div>
-        </div>
+    <div class="live-ticker">
+      <div class="ticker-content">
+        <span class="item">SYSTEM STATUS: <span class="green">ONLINE</span></span>
+        <span class="item">///</span>
+        <span class="item">WATER PRESSURE: 98.4%</span>
+        <span class="item">///</span>
+        <span class="item">TRAFFIC LOAD: <span class="red">OPTIMIZED</span></span>
+        <span class="item">///</span>
+        <span class="item">GRID FREQUENCY: 50Hz STABLE</span>
+        <span class="item">///</span>
+        <span class="item">ACTIVE AMBULANCES: 14</span>
+        <span class="item">///</span>
+        <span class="item">GARBAGE TRUCKS: EN ROUTE</span>
+        <span class="item">///</span>
+        <span class="item">SERVER LATENCY: 12ms</span>
+        <span class="item">///</span>
+        <span class="item">LAST SYNC: 00:01:45</span>
+        <span class="item">///</span>
+        <span class="item">OPTIMIZATION ALGORITHMS: RUNNING</span>
+      </div>
     </div>
 
-    <!-- PROBLEM 02 -->
-    <div class="expandable-item">
-        <div class="expandable-header">
-            <h4 class="problem-title mono">02. Disaster Relief Distribution</h4>
-            <div class="expand-icon">+</div>
-        </div>
-        <div class="expandable-body">
-            <div class="inner-content">
-                <p class="problem-desc">
-                    <strong style="color:#fff;">Issue:</strong>
-                    During floods or heatwaves, relief is distributed randomly —
-                    some shelters get excess, others get nothing.
-                </p>
+    <script>
+      // --- 1. BOOT SEQUENCE ---
+      window.addEventListener('load', () => {
+          setTimeout(() => {
+              const bootScreen = document.getElementById('boot-screen');
+              bootScreen.style.opacity = '0';
+              setTimeout(() => {
+                  bootScreen.style.display = 'none';
+              }, 500);
+          }, 2800);
+      });
 
-                <div class="solution-tag mono">
-                    SOL: Graph + Dijkstra + Priority Queue
-                </div>
+      // --- 2. CUSTOM CURSOR LOGIC ---
+      const cursor = document.getElementById('cursor');
+      const cursorDot = document.getElementById('cursor-dot');
 
-                <div class="terminal-block">
-                    <div class="terminal-header-dots">
-                        <div class="dot red"></div>
-                        <div class="dot yellow"></div>
-                        <div class="dot green"></div>
-                        <span style="color:#666;font-size:0.7em;">relief_dijkstra.cpp</span>
-                    </div>
-                    <div class="terminal-code">
-<span class="kw">typedef</span> pair&lt;<span class="kw">int</span>,<span class="kw">int</span>&gt; pii;
-vector&lt;vector&lt;pii&gt;&gt; graph(4);
+      window.addEventListener('mousemove', (e) => {
+          cursorDot.style.left = e.clientX + 'px';
+          cursorDot.style.top = e.clientY + 'px';
+          cursor.animate({
+              left: e.clientX + "px",
+              top: e.clientY + "px"
+          }, { duration: 500, fill: "forwards" });
+      });
+      
+      // Hover Interaction
+      document.querySelectorAll('a, .card, button').forEach(el => {
+          el.addEventListener('mouseenter', () => document.body.classList.add('hovering'));
+          el.addEventListener('mouseleave', () => document.body.classList.remove('hovering'));
+      });
 
-<span class="kw">priority_queue</span>&lt;pii, vector&lt;pii&gt;, greater&lt;pii&gt;&gt; pq;
-vector&lt;<span class="kw">int</span>&gt; dist(4, INT_MAX);
+      // --- 3. SCROLL REVEAL OBSERVER ---
+      const revealElements = document.querySelectorAll('.reveal');
+      const revealObserver = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+              if (entry.isIntersecting) {
+                  entry.target.classList.add('active');
+              }
+          });
+      }, { threshold: 0.1 });
 
-pq.<span class="fn">push</span>({0,0});
-dist[0] = 0;
+      revealElements.forEach(el => revealObserver.observe(el));
 
-<span class="kw">while</span>(!pq.<span class="fn">empty</span>()){
-    <span class="kw">auto</span> [d,u] = pq.<span class="fn">top</span>(); pq.<span class="fn">pop</span>();
-    <span class="kw">for</span>(<span class="kw">auto</span> [v,w] : graph[u]){
-        <span class="kw">if</span>(dist[v] &gt; d + w){
-            dist[v] = d + w;
-            pq.<span class="fn">push</span>({dist[v], v});
+      // --- 4. TYPEWRITER EFFECT ---
+      const textToType = "The design and analysis of algorithms involve understanding their fundamental properties, operations, and real-world applications through practical case studies. This includes comparing different algorithmic techniques such as array queries, sorting, searching, and graph algorithms, and evaluating their performance in terms of efficiency. A critical part of this study is analyzing the role of data structures in organizing and manipulating data to solve problems effectively, while assessing their time and space complexity. By building a strong theoretical foundation, these algorithmic problem-solving techniques can then be applied systematically to solve real-world problem scenarios in an efficient and structured manner..";
+      const typeWriterElement = document.getElementById('typewriter-text');
+      let hasTyped = false;
+
+      const typeWriterObserver = new IntersectionObserver((entries) => {
+          if(entries[0].isIntersecting && !hasTyped) {
+              hasTyped = true;
+              let i = 0;
+              typeWriterElement.innerHTML = "";
+              function type() {
+                  if (i < textToType.length) {
+                      typeWriterElement.innerHTML += textToType.charAt(i);
+                      i++;
+                      setTimeout(type, 15);
+                  }
+              }
+              type();
+              
+              // Trigger Bar Animations same time
+              document.querySelectorAll(".bar-fill").forEach((bar) => {
+                const width = bar.style.width;
+                bar.style.width = "0";
+                setTimeout(() => (bar.style.width = width), 100);
+              });
+          }
+      }, { threshold: 0.3 });
+
+      typeWriterObserver.observe(document.getElementById('terminal'));
+
+      // --- 5. 3D TILT EFFECT ---
+      document.querySelectorAll(".tilt-card").forEach((card) => {
+        card.addEventListener("mousemove", (e) => {
+          const rect = card.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          card.style.transform = `perspective(1000px) rotateX(${
+            (rect.height / 2 - y) / 15
+          }deg) rotateY(${
+            (x - rect.width / 2) / 15
+          }deg) scale3d(1.02, 1.02, 1.02)`;
+        });
+        card.addEventListener("mouseleave", () => {
+          card.style.transform = `perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)`;
+        });
+      });
+
+      // --- 6. TAB SWITCHING LOGIC ---
+      function openTab(tabName) {
+        // Hide all contents
+        const contents = document.querySelectorAll('.tab-content');
+        contents.forEach(c => c.classList.remove('active'));
+        
+        // Deactivate all buttons
+        const btns = document.querySelectorAll('.tab-btn');
+        btns.forEach(b => b.classList.remove('active'));
+        
+        // Activate specific tab
+        document.getElementById(tabName).classList.add('active');
+        // Activate button (simple search based on onclick attribute text)
+        event.currentTarget.classList.add('active');
+      }
+
+      // --- 7. NEURAL BACKGROUND ANIMATION ---
+      const canvas = document.getElementById("neural-canvas");
+      const ctx = canvas.getContext("2d");
+      
+      // Resize handling
+      function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        init(); 
+      }
+      
+      let particlesArray;
+
+      class Particle {
+        constructor(x, y, directionX, directionY, size, color) {
+          this.x = x; this.y = y;
+          this.directionX = directionX; this.directionY = directionY;
+          this.size = size; this.color = color;
         }
-    }
-}
-                    </div>
-                </div>
+        draw() {
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
+          ctx.fillStyle = "#00f2ff"; ctx.fill();
+        }
+        update() {
+          if (this.x > canvas.width || this.x < 0) this.directionX = -this.directionX;
+          if (this.y > canvas.height || this.y < 0) this.directionY = -this.directionY;
+          this.x += this.directionX; this.y += this.directionY;
+          this.draw();
+        }
+      }
 
-                <div class="sdg-container mono">
-                    <div class="sdg-tag">SDG 13: Climate Action</div>
-                    <div class="sdg-tag">SDG 11: Sustainable Cities</div>
-                    <div class="sdg-tag">SDG 3: Good Health</div>
-                </div>
-            </div>
-        </div>
-    </div>
+      function init() {
+        particlesArray = [];
+        let numberOfParticles = (canvas.height * canvas.width) / 9000;
+        for (let i = 0; i < numberOfParticles; i++) {
+          let size = Math.random() * 2 + 1;
+          let x = Math.random() * (innerWidth - size * 2) + size;
+          let y = Math.random() * (innerHeight - size * 2) + size;
+          let directionX = Math.random() * 0.5 - 0.25;
+          let directionY = Math.random() * 0.5 - 0.25;
+          particlesArray.push(new Particle(x, y, directionX, directionY, size, "#00f2ff"));
+        }
+      }
 
-    <!-- PROBLEM 03 -->
-    <div class="expandable-item">
-        <div class="expandable-header">
-            <h4 class="problem-title mono">03. Garbage & Sanitation Management</h4>
-            <div class="expand-icon">+</div>
-        </div>
-        <div class="expandable-body">
-            <div class="inner-content">
-                <p class="problem-desc">
-                    <strong style="color:#fff;">Issue:</strong>
-                    Overflowing garbage bins and dirty sanitation areas
-                    lead to unhygienic conditions and disease spread.
-                </p>
-
-                <div class="solution-tag mono">
-                    SOL: Priority Queue + BFS
-                </div>
-
-                <div class="terminal-block">
-                    <div class="terminal-header-dots">
-                        <div class="dot red"></div>
-                        <div class="dot yellow"></div>
-                        <div class="dot green"></div>
-                        <span style="color:#666;font-size:0.7em;">waste_bfs.cpp</span>
-                    </div>
-                    <div class="terminal-code">
-<span class="kw">priority_queue</span>&lt;Bin&gt; pq;
-pq.<span class="fn">push</span>({120,"Bus Stand"});
-pq.<span class="fn">push</span>({90,"Market Area"});
-
-<span class="kw">queue</span>&lt;<span class="kw">int</span>&gt; q;
-q.<span class="fn">push</span>(2);
-
-<span class="kw">while</span>(!q.<span class="fn">empty</span>()){
-    <span class="kw">int</span> area = q.<span class="fn">front</span>(); q.<span class="fn">pop</span>();
-    cout &lt;&lt; "Clean area " &lt;&lt; area;
-}
-                    </div>
-                </div>
-
-                <div class="sdg-container mono">
-                    <div class="sdg-tag">SDG 6: Clean Water & Sanitation</div>
-                    <div class="sdg-tag">SDG 3: Good Health</div>
-                    <div class="sdg-tag">SDG 12: Responsible Consumption</div>
-                    <div class="sdg-tag">SDG 11: Sustainable Cities</div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="impact-dashboard-modern">
-    <div class="impact-header">
-        <h3 class="mono">CITY IMPACT DASHBOARD</h3>
-        <span class="impact-sub mono">Population: 10,00,000</span>
-    </div>
-
-    <div class="impact-grid">
-        <div class="impact-card">
-            <h4>Population Coverage</h4>
-            <div class="progress-ring" data-value="82"></div>
-            <p>Citizens benefiting</p>
-        </div>
-
-        <div class="impact-card">
-            <h4>Governance Efficiency</h4>
-            <div class="progress-ring" data-value="55" data-type="down"></div>
-            <p>SLA resolution time</p>
-        </div>
-
-        <div class="impact-card">
-            <h4>Power Reliability</h4>
-            <div class="progress-ring" data-value="45" data-type="down"></div>
-            <p>Outages reduced</p>
-        </div>
-
-        <div class="impact-card">
-            <h4>Waste Overflow</h4>
-            <div class="progress-ring" data-value="60" data-type="down"></div>
-            <p>Overflow incidents</p>
-        </div>
-
-        <div class="impact-card">
-            <h4>Disaster Response</h4>
-            <div class="progress-ring" data-value="70"></div>
-            <p>Response speed improved</p>
-        </div>
-
-        <div class="impact-card">
-            <h4>Environmental Risk</h4>
-            <div class="progress-ring" data-value="30" data-type="down"></div>
-            <p>Health risk exposure</p>
-        </div>
-    </div>
-
-    <div class="impact-footer mono">
-        <div>💰 Annual City Revenue: ₹5,000 Cr</div>
-        <div>🧠 Smart Systems Allocation: <strong>7% (₹350 Cr / year)</strong></div>
-        <div>📈 ROI Breakeven: <strong>6–8 months</strong></div>
-    </div>
-</div>
-
-<div class="systems-summary">
-    <div class="summary-header">
-        <h3 class="mono">SYSTEMS_OVERVIEW</h3>
-        <span class="summary-tag mono">MULTI-DOMAIN OPTIMIZATION</span>
-    </div>
-
-    <div class="summary-grid">
-        <div class="summary-card">
-            <h4 class="mono">🌐 Domains Covered</h4>
-            <p>
-                Tourism, Renewable Energy, Civic Governance, Wildlife Conservation,
-                Disaster Management, and Religious Crowd Safety.
-            </p>
-        </div>
-
-        <div class="summary-card">
-            <h4 class="mono">🧠 Core Algorithms</h4>
-            <p>
-                BFS, DFS, Dijkstra, Bellman-Ford, Priority Queues,
-                Segment Trees, KMP, Red-Black Trees, Heaps.
-            </p>
-        </div>
-
-        <div class="summary-card">
-            <h4 class="mono">⚙️ System Properties</h4>
-            <p>
-                Real-time decision making, SLA-aware routing,
-                fault detection, risk minimization,
-                scalable graph-based modeling.
-            </p>
-        </div>
-
-        <div class="summary-card">
-            <h4 class="mono">🎯 Engineering Focus</h4>
-            <p>
-                Uses only core data structures and algorithms,
-                avoiding black-box ML, ensuring explainability,
-                correctness, and interview-level clarity.
-            </p>
-        </div>
-
-        <div class="summary-card wide">
-            <h4 class="mono">🌍 SDG Alignment</h4>
-            <div class="sdg-row mono">
-                <span>SDG 3</span>
-                <span>SDG 6</span>
-                <span>SDG 7</span>
-                <span>SDG 8</span>
-                <span>SDG 9</span>
-                <span>SDG 11</span>
-                <span>SDG 12</span>
-                <span>SDG 13</span>
-                <span>SDG 15</span>
-                <span>SDG 16</span>
-            </div>
-        </div>
-    </div>
-
-    <div class="summary-footer mono">
-        Designed as a <span class="highlight">unified algorithmic city-scale system</span>,
-        not isolated problems.
-    </div>
-</div>
-
-
-            <div class="section-header">
-                <h2 class="mono" style="color: var(--text-main); font-size: 1.4rem;">VISUAL_GALLERY</h2>
-                <div class="header-line"></div>
-            </div>
-
-            <div class="img-container">
-                <div class="img-card">
-                    <h3>Tourist places</h3>
-                    <img src="./image11.png" alt="tourist image">
-                </div>
-                <div class="img-card">
-                    <h3>Hydro Power Station</h3>
-                    <img src="./image2.jpg" alt="hydroimage">
-                </div>
-            </div>
-
-        </div>
-
-        <script>
-            // --- ACCORDION LOGIC ---
-            document.querySelectorAll('.expandable-header').forEach(header => {
-                header.addEventListener('click', () => {
-                    const item = header.parentElement;
-                    const body = item.querySelector('.expandable-body');
-                    item.classList.toggle('active');
-                    if (item.classList.contains('active')) {
-                        body.style.maxHeight = body.scrollHeight + "px";
-                    } else {
-                        body.style.maxHeight = 0;
-                    }
-                });
-            });
-document.querySelectorAll('.progress-ring').forEach(ring => {
-    const value = ring.dataset.value;
-    const isDown = ring.dataset.type === "down";
-    ring.style.setProperty('--val', value);
-    ring.classList.toggle('down', isDown);
-    ring.textContent = (isDown ? "↓" : "") + value + "%";
-});
-            // --- CANVAS ANIMATION (Delaunay Triangulation) ---
-            const canvas = document.getElementById('network-canvas');
-            const ctx = canvas.getContext('2d');
-            let width, height;
-            let particles = [];
-            const particleCount = 60;
-            const connectionDistance = 150;
-
-            function resize() {
-                width = canvas.width = window.innerWidth;
-                height = canvas.height = window.innerHeight;
+      function connect() {
+        let opacityValue = 1;
+        for (let a = 0; a < particlesArray.length; a++) {
+          for (let b = a; b < particlesArray.length; b++) {
+            let distance =
+              (particlesArray[a].x - particlesArray[b].x) ** 2 +
+              (particlesArray[a].y - particlesArray[b].y) ** 2;
+            if (distance < (canvas.width / 7) * (canvas.height / 7)) {
+              opacityValue = 1 - distance / 20000;
+              ctx.strokeStyle = "rgba(0, 242, 255," + opacityValue + ")";
+              ctx.lineWidth = 1;
+              ctx.beginPath();
+              ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
+              ctx.lineTo(particlesArray[b].x, particlesArray[b].y);
+              ctx.stroke();
             }
-            window.addEventListener('resize', resize);
-            resize();
+          }
+        }
+      }
 
-            class Particle {
-                constructor() {
-                    this.x = Math.random() * width;
-                    this.y = Math.random() * height;
-                    this.vx = (Math.random() - 0.5) * 0.5;
-                    this.vy = (Math.random() - 0.5) * 0.5;
-                }
-                update() {
-                    this.x += this.vx; this.y += this.vy;
-                    if (this.x < 0 || this.x > width) this.vx *= -1;
-                    if (this.y < 0 || this.y > height) this.vy *= -1;
-                }
-            }
+      function animate() {
+        requestAnimationFrame(animate);
+        ctx.clearRect(0, 0, innerWidth, innerHeight);
+        for (let i = 0; i < particlesArray.length; i++) {
+          particlesArray[i].update();
+        }
+        connect();
+      }
 
-            function init() {
-                particles = [];
-                for (let i = 0; i < particleCount; i++) particles.push(new Particle());
-            }
+      window.addEventListener("resize", resizeCanvas);
 
-            function animate() {
-                ctx.clearRect(0, 0, width, height);
-                ctx.fillStyle = 'rgba(245, 158, 11, 0.5)';
-
-                for (let i = 0; i < particles.length; i++) {
-                    let p = particles[i];
-                    p.update();
-                    ctx.beginPath(); ctx.arc(p.x, p.y, 2, 0, Math.PI * 2); ctx.fill();
-
-                    for (let j = i; j < particles.length; j++) {
-                        let p2 = particles[j];
-                        let dx = p.x - p2.x; let dy = p.y - p2.y;
-                        let dist = Math.sqrt(dx * dx + dy * dy);
-                        if (dist < connectionDistance) {
-                            ctx.beginPath();
-                            ctx.strokeStyle = `rgba(255, 255, 255, ${0.1 - dist / connectionDistance * 0.1})`;
-                            ctx.lineWidth = 1;
-                            ctx.moveTo(p.x, p.y);
-                            ctx.lineTo(p2.x, p2.y);
-                            ctx.stroke();
-                            // Triangulation fill
-                            for (let k = j; k < particles.length; k++) {
-                                let p3 = particles[k];
-                                let d2 = Math.sqrt((p2.x - p3.x) ** 2 + (p2.y - p3.y) ** 2);
-                                let d3 = Math.sqrt((p.x - p3.x) ** 2 + (p.y - p3.y) ** 2);
-                                if (d2 < connectionDistance && d3 < connectionDistance) {
-                                    ctx.beginPath();
-                                    ctx.fillStyle = `rgba(244, 63, 94, ${0.03 - dist / connectionDistance * 0.03})`;
-                                    ctx.moveTo(p.x, p.y); ctx.lineTo(p2.x, p2.y); ctx.lineTo(p3.x, p3.y);
-                                    ctx.fill();
-                                }
-                            }
-                        }
-                    }
-                }
-                requestAnimationFrame(animate);
-            }
-            init();
-            animate();
-        </script>
-</body>
-
+      resizeCanvas();
+      animate();
+    </script>
+  </body>
 </html>
